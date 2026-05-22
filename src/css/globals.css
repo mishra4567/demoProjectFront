@@ -1,0 +1,179 @@
+/* src/globals.css */
+
+/* ── Tailwind v4 theme (replaces tailwind.config.js) ── */
+@theme {
+  /* Fonts */
+  --font-sans: 'DM Sans', system-ui, sans-serif;
+  --font-display: 'Syne', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Semantic colors (map to CSS vars below) */
+  --color-bg-base: var(--color-bg-base-val);
+  --color-bg-subtle: var(--color-bg-subtle-val);
+  --color-surface: var(--color-surface-val);
+  --color-surface-raised: var(--color-surface-raised-val);
+  --color-border: var(--color-border-val);
+  --color-border-strong: var(--color-border-strong-val);
+  --color-text: var(--color-text-val);
+  --color-text-muted: var(--color-text-muted-val);
+  --color-text-subtle: var(--color-text-subtle-val);
+  --color-accent: var(--color-accent-val);
+  --color-accent-hover: var(--color-accent-hover-val);
+  --color-accent-subtle: var(--color-accent-subtle-val);
+  --color-accent-fg: var(--color-accent-fg-val);
+  --color-success: var(--color-success-val);
+  --color-success-subtle: var(--color-success-subtle-val);
+  --color-success-fg: var(--color-success-fg-val);
+  --color-warning: var(--color-warning-val);
+  --color-warning-subtle: var(--color-warning-subtle-val);
+  --color-warning-fg: var(--color-warning-fg-val);
+  --color-danger: var(--color-danger-val);
+  --color-danger-subtle: var(--color-danger-subtle-val);
+  --color-danger-fg: var(--color-danger-fg-val);
+  --color-info: var(--color-info-val);
+  --color-info-subtle: var(--color-info-subtle-val);
+  --color-info-fg: var(--color-info-fg-val);
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+
+  /* Shadows */
+  --shadow-sm: var(--shadow-sm-val);
+  --shadow-md: var(--shadow-md-val);
+  --shadow-lg: var(--shadow-lg-val);
+}
+
+/* ── Light theme ── */
+:root,
+.light {
+  /* Backgrounds */
+  --color-bg-base-val: #f8f7f4;
+  --color-bg-subtle-val: #f0ede8;
+  --color-surface-val: #ffffff;
+  --color-surface-raised-val: #f4f2ef;
+  /* Borders */
+  --color-border-val: #e4e0d9;
+  --color-border-strong-val: #c9c3b8;
+  /* Text */
+  --color-text-val: #1a1916;
+  --color-text-muted-val: #6b6660;
+  --color-text-subtle-val: #9e9890;
+  /* Accent — warm amber */
+  --color-accent-val: #d97706;
+  --color-accent-hover-val: #b45309;
+  --color-accent-subtle-val: #fef3c7;
+  --color-accent-fg-val: #ffffff;
+  /* Success */
+  --color-success-val: #059669;
+  --color-success-subtle-val: #d1fae5;
+  --color-success-fg-val: #065f46;
+  /* Warning */
+  --color-warning-val: #d97706;
+  --color-warning-subtle-val: #fef3c7;
+  --color-warning-fg-val: #92400e;
+  /* Danger */
+  --color-danger-val: #dc2626;
+  --color-danger-subtle-val: #fee2e2;
+  --color-danger-fg-val: #991b1b;
+  /* Info */
+  --color-info-val: #2563eb;
+  --color-info-subtle-val: #dbeafe;
+  --color-info-fg-val: #1e40af;
+  /* Shadows */
+  --shadow-sm-val: 0 1px 3px 0 rgba(0, 0, 0, .06), 0 1px 2px -1px rgba(0, 0, 0, .05);
+  --shadow-md-val: 0 4px 12px 0 rgba(0, 0, 0, .08), 0 2px 4px -2px rgba(0, 0, 0, .06);
+  --shadow-lg-val: 0 20px 40px -8px rgba(0, 0, 0, .12), 0 8px 16px -4px rgba(0, 0, 0, .08);
+  color-scheme: light;
+}
+
+/* ── Dark theme ── */
+.dark {
+  /* Backgrounds */
+  --color-bg-base-val: #111110;
+  --color-bg-subtle-val: #161614;
+  --color-surface-val: #1c1c1a;
+  --color-surface-raised-val: #242422;
+  /* Borders */
+  --color-border-val: #2e2e2b;
+  --color-border-strong-val: #444440;
+  /* Text */
+  --color-text-val: #f0ede8;
+  --color-text-muted-val: #9e9890;
+  --color-text-subtle-val: #6b6660;
+  /* Accent — warm amber (slightly lighter for dark bg) */
+  --color-accent-val: #f59e0b;
+  --color-accent-hover-val: #fbbf24;
+  --color-accent-subtle-val: #292011;
+  --color-accent-fg-val: #111110;
+  /* Success */
+  --color-success-val: #10b981;
+  --color-success-subtle-val: #0d2118;
+  --color-success-fg-val: #6ee7b7;
+  /* Warning */
+  --color-warning-val: #f59e0b;
+  --color-warning-subtle-val: #272010;
+  --color-warning-fg-val: #fcd34d;
+  /* Danger */
+  --color-danger-val: #ef4444;
+  --color-danger-subtle-val: #280e0e;
+  --color-danger-fg-val: #fca5a5;
+  /* Info */
+  --color-info-val: #3b82f6;
+  --color-info-subtle-val: #0e1627;
+  --color-info-fg-val: #93c5fd;
+  /* Shadows (stronger in dark to create depth) */
+  --shadow-sm-val: 0 1px 3px 0 rgba(0, 0, 0, .3), 0 1px 2px -1px rgba(0, 0, 0, .25);
+  --shadow-md-val: 0 4px 12px 0 rgba(0, 0, 0, .35), 0 2px 4px -2px rgba(0, 0, 0, .3);
+  --shadow-lg-val: 0 20px 40px -8px rgba(0, 0, 0, .5), 0 8px 16px -4px rgba(0, 0, 0, .35);
+  color-scheme: dark;
+}
+
+/* ── Base reset ── */
+@layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--color-bg-base-val);
+    color: var(--color-text-val);
+    min-height: 100vh;
+    transition: background-color 0.3s, color 0.3s;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Syne', system-ui, sans-serif;
+    font-weight: 600;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong-val);
+    border-radius: 99px;
+  }
+}

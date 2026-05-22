@@ -1,0 +1,119 @@
+demoProject Project Structure
+
+
+src/
+├── routes/
+│   └── index.jsx          # All route definitions (like web.php)
+├── controllers/
+│   ├── AuthController.js  # Handles auth logic
+│   └── UserController.js
+├── css/
+│   └── globals.css        # Tailwind imports and custom styles
+├── middleware/
+│   └── auth.js           # Express middleware for protected routes
+├── models/
+│   ├── User.js            # API calls for User resource
+│   └── Post.js
+├── routes/
+│   └── index.js           # Express route definitions
+├── views/                 # (or pages/)
+│   ├── auth/
+│   │   ├── Login.jsx
+│   │   └── Register.jsx
+│   ├── dashboard/
+│   |    └── Dashboard.jsx
+|   └──components/ 
+│   │     |── htmlComponents/
+│   │     |       └── Button.jsx
+|   │     |── ThemeProvider/
+|   │           └── THemeProvider.jsx
+│   ├── layout/
+|   |       └── MainLayout.jsx
+│   ├── pages/
+|   └── index.jsx
+├── services/
+│   ├── api.js             # Axios base instance (points to Laravel)
+│   └── AuthService.js
+├── components/            # Reusable UI components
+└── App.jsx
+
+
+
+react-vite-project/
+│
+├── public/
+│
+├── src/
+│   │
+│   ├── app/
+│   │   ├── router/
+│   │   │   └── index.jsx          # Like routes/web.php
+│   │   │
+│   │   ├── layouts/
+│   │   │   ├── AppLayout.jsx
+│   │   │   └── AuthLayout.jsx
+│   │   │
+│   │   └── middleware/
+│   │       └── auth.js
+│   │
+│   ├── controllers/
+│   │   ├── AuthController.js
+│   │   ├── UserController.js
+│   │   └── ProductController.js
+│   │
+│   ├── services/
+│   │   ├── api.js
+│   │   ├── AuthService.js
+│   │   └── UserService.js
+│   │
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Product.js
+│   │   └── Order.js
+│   │
+│   ├── views/
+│   │   ├── auth/
+│   │   │   ├── Login.jsx
+│   │   │   └── Register.jsx
+│   │   │
+│   │   ├── dashboard/
+│   │   │   └── Dashboard.jsx
+│   │   │
+│   │   ├── products/
+│   │   │   ├── Index.jsx
+│   │   │   ├── Create.jsx
+│   │   │   ├── Edit.jsx
+│   │   │   └── Show.jsx
+│   │   │
+│   │   └── errors/
+│   │       ├── NotFound.jsx
+│   │       └── Forbidden.jsx
+│   │
+│   ├── components/
+│   │   ├── htmlComponents/
+│   │   │   ├── Button.jsx
+│   │   │   ├── Input.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   └── Card.jsx
+│   │   │
+│   │   ├── forms/
+│   │   │   └── LoginForm.jsx
+│   │   │
+│   │   └── shared/
+│   │       ├── Navbar.jsx
+│   │       ├── Sidebar.jsx
+│   │       └── Footer.jsx
+│   │
+│   ├── css/
+│   │   ├── globals.css
+│   │   ├── variables.css
+│   │   └── animations.css
+│   │
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+│
+├── .env
+├── package.json
+├── vite.config.js
+└── README.md
