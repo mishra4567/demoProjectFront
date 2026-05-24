@@ -17,6 +17,10 @@
   --color-text: var(--color-text-val);
   --color-text-muted: var(--color-text-muted-val);
   --color-text-subtle: var(--color-text-subtle-val);
+  --color-text-login: var(--color-text-login-val);
+  --color-text-login-hover: var(--color-text-login-hover-val);
+  --color-text-register: var(--color-text-register-val);
+  --color-text-register-hover: var(--color-text-register-hover-val);
   --color-accent: var(--color-accent-val);
   --color-accent-hover: var(--color-accent-hover-val);
   --color-accent-subtle: var(--color-accent-subtle-val);
@@ -62,6 +66,10 @@
   --color-text-val: #1a1916;
   --color-text-muted-val: #6b6660;
   --color-text-subtle-val: #9e9890;
+  --color-text-login-val: #d97706;
+  --color-text-login-hover-val: #b45309;
+  --color-text-register-val: #059669;
+  --color-text-register-hover-val: #065f46;
   /* Accent — warm amber */
   --color-accent-val: #d97706;
   --color-accent-hover-val: #b45309;
@@ -104,6 +112,10 @@
   --color-text-val: #f0ede8;
   --color-text-muted-val: #9e9890;
   --color-text-subtle-val: #6b6660;
+  --color-text-login-val: #d8aa5a;
+  --color-text-login-hover-val: #b47544;
+  --color-text-register-val: #54b695;
+  --color-text-register-hover-val: #0c9971;
   /* Accent — warm amber (slightly lighter for dark bg) */
   --color-accent-val: #f59e0b;
   --color-accent-hover-val: #fbbf24;

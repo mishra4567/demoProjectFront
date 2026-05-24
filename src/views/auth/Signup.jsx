@@ -3,11 +3,9 @@
 
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import AuthController from "../../controllers/AuthController";
+import { useAuth } from "../../context/AuthContext";
+import AuthController from "../../controllers/AuthController";
 import { Button, Input, Alert } from "../../components";
-// import Button from "../../components/ui/Button";
-// import Input from "../../components/ui/Input";
-// import Alert from "../../components/ui/Alert";
 
 /* ── eye icon ── */
 const EyeIcon = ({ open }) =>
@@ -50,6 +48,7 @@ const strengthColor = (s) =>
     "var(--color-info)",
     "var(--color-success)",
   ][s] || "";
+
 const strengthBg = (s) =>
   [
     "",
@@ -61,6 +60,7 @@ const strengthBg = (s) =>
 
 export default function Register() {
   const navigate = useNavigate();
+  const { login } = useAuth(); // push customer into global state
 
   const [form, setForm] = useState({
     name: "",
@@ -68,8 +68,8 @@ export default function Register() {
     password: "",
     password_confirmation: "",
   });
-  const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPw, setShowPw] = useState(false);
   const [showPwC, setShowPwC] = useState(false);
@@ -77,6 +77,7 @@ export default function Register() {
 
   const strength = strengthOf(form.password);
 
+  // ── Client-side validation ─────────────────────────────────────────────────
   const validate = () => {
     const e = {};
     if (!form.name.trim()) e.name = "Full name is required";
@@ -86,33 +87,35 @@ export default function Register() {
       e.password = "Password must be at least 8 characters";
     if (form.password !== form.password_confirmation)
       e.password_confirmation = "Passwords do not match";
-    setErrors(e);
+    setFieldErrors(e);
     return !Object.keys(e).length;
   };
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
-    setErrors((er) => ({ ...er, [e.target.name]: "" }));
-    setApiError("");
+    setFieldErrors((er) => ({ ...er, [e.target.name]: "" }));
+    setError("");
   };
 
+  // ── Submit — calls AuthController.register with your exact signature ───────
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    setLoading(true);
-    await AuthController.register(form, {
-      onSuccess: () => {
+
+    await AuthController.register(
+      form, // { name, email, password, password_confirmation }
+      { login }, // AuthContext — login(customer) updates global state
+      (path) => {
+        // Custom navigate: show success screen first, then redirect
         setDone(true);
-        setTimeout(() => navigate("/products"), 1600);
+        setTimeout(() => navigate(path), 1600);
       },
-      onError: (msg) => {
-        setApiError(msg);
-        setLoading(false);
-      },
-    });
+      setError, // (message: string) => void
+      setLoading, // (bool) => void
+    );
   };
 
-  /* ── success ── */
+  /* ── Success screen ── */
   if (done)
     return (
       <div
@@ -180,8 +183,9 @@ export default function Register() {
     >
       {/* ── LEFT: brand panel ── */}
       <div
+        className="register-left-panel"
         style={{
-          display: "none", // overridden by media via inline trick below
+          display: "none",
           flexDirection: "column",
           justifyContent: "space-between",
           width: "44%",
@@ -192,7 +196,6 @@ export default function Register() {
           position: "relative",
           overflow: "hidden",
         }}
-        className="register-left-panel"
       >
         {/* Decorative blob */}
         <svg
@@ -217,7 +220,6 @@ export default function Register() {
           </g>
         </svg>
 
-        {/* Logo */}
         <div style={{ position: "relative", zIndex: 1 }}>
           <span
             style={{
@@ -232,7 +234,6 @@ export default function Register() {
           </span>
         </div>
 
-        {/* Body copy */}
         <div
           style={{
             position: "relative",
@@ -348,7 +349,6 @@ export default function Register() {
           </ul>
         </div>
 
-        {/* Footer */}
         <p
           style={{
             position: "relative",
@@ -373,10 +373,9 @@ export default function Register() {
           minWidth: 0,
         }}
       >
-        {/* Mobile logo */}
         <div
-          style={{ marginBottom: 32, alignSelf: "flex-start" }}
           className="mobile-logo"
+          style={{ marginBottom: 32, alignSelf: "flex-start" }}
         >
           <span
             style={{
@@ -421,11 +420,11 @@ export default function Register() {
             </p>
           </div>
 
-          {/* API error */}
-          {apiError && (
+          {/* API / server error */}
+          {error && (
             <div style={{ marginBottom: 20 }}>
-              <Alert variant="danger" onDismiss={() => setApiError("")}>
-                {apiError}
+              <Alert variant="danger" onDismiss={() => setError("")}>
+                {error}
               </Alert>
             </div>
           )}
@@ -435,7 +434,6 @@ export default function Register() {
             noValidate
             style={{ display: "flex", flexDirection: "column", gap: 16 }}
           >
-            {/* Name */}
             <Input
               label="Full name"
               name="name"
@@ -443,12 +441,11 @@ export default function Register() {
               placeholder="Arjun Mehta"
               value={form.name}
               onChange={handleChange}
-              error={errors.name}
+              error={fieldErrors.name}
               autoComplete="name"
               autoFocus
             />
 
-            {/* Email */}
             <Input
               label="Email address"
               name="email"
@@ -456,11 +453,11 @@ export default function Register() {
               placeholder="arjun@example.com"
               value={form.email}
               onChange={handleChange}
-              error={errors.email}
+              error={fieldErrors.email}
               autoComplete="email"
             />
 
-            {/* Password */}
+            {/* Password + strength meter */}
             <div>
               <div style={{ position: "relative" }}>
                 <Input
@@ -470,13 +467,13 @@ export default function Register() {
                   placeholder="Min. 8 characters"
                   value={form.password}
                   onChange={handleChange}
-                  error={errors.password}
+                  error={fieldErrors.password}
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
-                  aria-label="Toggle password"
+                  aria-label="Toggle password visibility"
                   style={{
                     position: "absolute",
                     right: 12,
@@ -493,7 +490,6 @@ export default function Register() {
                 </button>
               </div>
 
-              {/* Strength bar */}
               {form.password && (
                 <div
                   style={{
@@ -556,13 +552,13 @@ export default function Register() {
                 placeholder="Repeat your password"
                 value={form.password_confirmation}
                 onChange={handleChange}
-                error={errors.password_confirmation}
+                error={fieldErrors.password_confirmation}
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPwC((v) => !v)}
-                aria-label="Toggle confirm password"
+                aria-label="Toggle confirm password visibility"
                 style={{
                   position: "absolute",
                   right: 12,
@@ -613,7 +609,6 @@ export default function Register() {
               .
             </p>
 
-            {/* Submit */}
             <Button
               type="submit"
               variant="primary"
@@ -729,7 +724,6 @@ export default function Register() {
         </div>
       </div>
 
-      {/* Responsive styles */}
       <style>{`
         @media (min-width: 1024px) {
           .register-left-panel { display: flex !important; }

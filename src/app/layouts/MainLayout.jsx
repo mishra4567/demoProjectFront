@@ -1,3 +1,4 @@
+// src/app/layouts/MainLayout.jsx
 import { Outlet } from "react-router-dom";
 
 import Header from "../../components/shared/Header";

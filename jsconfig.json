@@ -1,8 +1,33 @@
+// {
+//   "compilerOptions": {
+//     "checkJs": true,
+//     "jsx": "react-jsx",
+//     "moduleResolution": "bundler",
+//     "target": "ES2020"
+//   }
+// }
 {
   "compilerOptions": {
-    "checkJs": true,
-    "jsx": "react-jsx",
+    "checkJs":          true,
+    "jsx":              "react-jsx",
     "moduleResolution": "bundler",
-    "target": "ES2020"
-  }
+    "target":           "ES2020",
+    "module":           "ESNext",
+
+    // Tells checkJs that untyped imports (SVGs, CSS) are fine
+    "allowImportingTsExtensions": false,
+    "noEmit":           true,
+
+    // Treat every JS file as a module (avoids "cannot redeclare block-scoped variable")
+    "moduleDetection":  "force",
+
+    // Allow default imports from modules without a default export declaration
+    "allowSyntheticDefaultImports": true,
+
+    // JSDoc types are enough — don't require .d.ts files
+    "strict":           false,
+    "noImplicitAny":    false
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
