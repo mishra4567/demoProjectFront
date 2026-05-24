@@ -102,17 +102,27 @@ export default function Register() {
     e.preventDefault();
     if (!validate()) return;
 
-    await AuthController.register(
-      form, // { name, email, password, password_confirmation }
-      { login }, // AuthContext — login(customer) updates global state
-      (path) => {
-        // Custom navigate: show success screen first, then redirect
-        setDone(true);
-        setTimeout(() => navigate(path), 1600);
-      },
-      setError, // (message: string) => void
-      setLoading, // (bool) => void
-    );
+    // ✅ AuthController.register only does the API call + returns data
+    const data = await AuthController.register(form, setError, setLoading);
+    console.log("data:", data);
+    console.log("customer:", data?.customer);
+    console.log("status:", data?.customer?.status);
+    if (data?.customer) {
+      login(data.customer); // ✅ update React context FIRST — component still mounted
+      setDone(true); // show success screen
+      setTimeout(() => navigate("/"), 1600); // then navigate after 1.6s
+    }
+    // await AuthController.register(
+    //   form, // { name, email, password, password_confirmation }
+    //   { login }, // AuthContext — login(customer) updates global state
+    //   (path) => {
+    //     // Custom navigate: show success screen first, then redirect
+    //     setDone(true);
+    //     setTimeout(() => navigate(path), 1600);
+    //   },
+    //   setError, // (message: string) => void
+    //   setLoading, // (bool) => void
+    // );
   };
 
   /* ── Success screen ── */

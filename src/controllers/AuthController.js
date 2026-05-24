@@ -41,21 +41,21 @@ const AuthController = {
    * @param {Function} setError
    * @param {Function} setLoading
    */
-  register: async (formData, { login }, navigate, setError, setLoading) => {
+  register: async (formData, setError, setLoading) => {
     try {
       setLoading(true);
       setError("");
 
       const data = await authService.register(formData);
 
-      login(data.customer);
-      navigate("/");
+      return data; // ← return data, let Register.jsx handle login + navigate
     } catch (err) {
       setError(
         err?.response?.data?.message ||
           err?.message ||
           "Registration failed. Please try again.",
       );
+      return null;
     } finally {
       setLoading(false);
     }

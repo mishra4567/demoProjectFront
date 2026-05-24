@@ -1,4 +1,7 @@
 24.5.26:-
+Vertion: 1.0.2
+Comment:- Bug fix for Register.jsx, now it will login and navigate to home page after successful registration.
+24.5.26:-
 Vertion: 1.0.1
 Comment:- frontEnd Create, Authentication Backend & frontEnd,
           connection with Backend Login, Register, Logout, Home Page.

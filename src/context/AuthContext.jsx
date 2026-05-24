@@ -29,27 +29,40 @@ const TOKEN_KEY = "auth_token";
 const CUSTOMER_KEY = "auth_customer";
 
 function readCutomer() {
-    try {
-        const customer = localStorage.getItem(CUSTOMER_KEY);
-        return customer ? JSON.parse(customer) : null;
-    } catch (error) {
-        console.log("AuthContext :: readCustomer :: error", error);
-        return null;
-    }   
+  try {
+    const customer = localStorage.getItem(CUSTOMER_KEY);
+    return customer ? JSON.parse(customer) : null;
+  } catch (error) {
+    console.log("AuthContext :: readCustomer :: error", error);
+    return null;
+  }
 }
 
 export function AuthProvider({ children }) {
   // Initialise from localStorage so page refresh keeps the user logged in
   const [customer, setCustomer] = useState(() => readCutomer());
 
-  const isAuth = !!customer && customer.status === 1;
+  const isAuth = !!customer && (customer.status ?? 1) === 1;
 
   /**
    * Called by Login / Register views inside onSuccess.
+   * Also persists to localStorage so a hard refresh keeps the session.
    * @param {Customer} customerData
    */
   const login = useCallback((customerData) => {
-    setCustomer(customerData);
+    // ✅ persist to localStorage immediately
+    localStorage.setItem(
+      CUSTOMER_KEY,
+      JSON.stringify({
+        id: customerData.id,
+        name: customerData.name,
+        email: customerData.email,
+        phone: customerData.phone ?? null,
+        role: customerData.role ?? "",
+        status: customerData.status ?? 1,
+      }),
+    );
+    setCustomer(customerData); // update React state → triggers re-render
   }, []);
 
   /**
@@ -57,10 +70,10 @@ export function AuthProvider({ children }) {
    * then resets React state so Navbar, guards etc. all update instantly.
    */
   const logout = useCallback(() => {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(CUSTOMER_KEY);
-        setCustomer(null);
-    }, []);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(CUSTOMER_KEY);
+    setCustomer(null);
+  }, []);
 
   /**
    * Re-reads customer from localStorage.
