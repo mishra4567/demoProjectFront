@@ -19,6 +19,7 @@ export {
   useTheme,
 } from "./ThemeProvider/ThemeProvider";
 export { default as IconBtn } from "./htmlComponents/IconBtn";
+export { default as Fetcherror } from "./htmlComponents/Fetcherror";
 
 // import Button from "./htmlComponents/Button";
 // import Input from "./htmlComponents/Input";

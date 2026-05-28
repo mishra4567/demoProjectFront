@@ -15,7 +15,7 @@ export class HttpService {
 
   constructor() {
     this.baseUrl = `${config.demoprojectApiBaseUrl}${config.apiPrefix}`;
-    console.log("BaseURL →", this.baseUrl);
+    // console.log("BaseURL →", this.baseUrl);
     // → "http://127.0.0.1:8000/api/v1"
   }
 
