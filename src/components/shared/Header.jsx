@@ -1,8 +1,19 @@
 // src/views/components/shared/Header.jsx
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useState, useRef, useEffect } from "react";
-import { useTheme } from "../index";
-import { MoonIcon, SunIcon, SystemIcon } from "../icons/Index";
+import { IconBtn, useTheme } from "../index";
+import {
+  BellIcon,
+  CartIcon,
+  ChevronDownIcon,
+  HeartIcon,
+  LogoutIcon,
+  MenuIcon,
+  MoonIcon,
+  SunIcon,
+  SystemIcon,
+  XIcon,
+} from "../icons/Index";
 import { useAuth } from "../../context/AuthContext";
 import AuthController from "../../controllers/AuthController";
 
@@ -12,256 +23,392 @@ const themes = [
   { value: "system", label: "System", Icon: SystemIcon },
 ];
 
+const navLinks = [
+  { label: "Home", to: "/" },
+  { label: "Products", to: "/products" },
+  { label: "Categories", to: "/categories" },
+  { label: "Brands", to: "/brands" },
+  { label: "Offers", to: "/offers" },
+];
+const notificationCount = 3;
+const wishlistCount = 4;
+const cartCount = 1;
+
+const totalMobileBadges = notificationCount + wishlistCount + cartCount;
+
 export default function Header() {
   const { theme, setTheme } = useTheme();
   const { customer, isAuth, logout } = useAuth();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const [menuOpen, setMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  const firstName = customer?.name?.split(" ")[0] ?? "";
+  const firstName = customer?.name?.split(" ")[0] ?? "Account";
   const initial = firstName.charAt(0).toUpperCase();
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target))
         setDropdownOpen(false);
-      }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // ✅ Fixed: pass authContext object + navigate separately
   const handleLogout = () => {
     setDropdownOpen(false);
+    setMenuOpen(false);
     AuthController.logout({ logout }, navigate);
   };
+  const menuIconClass = `w-5 h-5 text-text-subtle transition-transform duration-200 ${menuOpen ? "rotate-90" : ""}`;
 
   return (
-    <header className="border-b border-border bg-surface">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Brand */}
-        <Link to="/" className="text-2xl font-bold text-text">
-          Ecommerce
-        </Link>
+    <header className="bg-surface border-b border-border sticky top-0 z-40">
+      {/* ── Main bar ── */}
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16 relative">
+          {/* Left — hamburger (mobile) */}
+          <button
+            onClick={() => setMenuOpen((v) => !v)}
+            aria-label="Toggle menu"
+            className="w-9 h-9 flex items-center justify-center rounded-lg
+              border border-border text-text-muted hover:bg-surface-raised
+              transition-colors md:hidden"
+          >
+            {menuOpen ? (
+              <XIcon className={menuIconClass} />
+            ) : (
+              <MenuIcon className={menuIconClass} />
+            )}
+          </button>
 
-        {/* Main nav */}
-        <nav className="flex items-center gap-4">
+          {/* Logo — centered on mobile, left on desktop */}
           <Link
             to="/"
-            className="text-text-muted hover:text-text transition-colors"
+            className="absolute left-1/2 -translate-x-1/2
+              md:static md:left-auto md:translate-x-0
+              font-display text-xl font-semibold text-text
+              hover:text-accent transition-colors whitespace-nowrap"
           >
-            Home
+            Eco<span className="text-accent">mmerce</span>
           </Link>
-        </nav>
 
-        {/* Right side */}
-        <div className="flex items-center gap-3">
-          {/* Auth section */}
-          {isAuth ? (
-            // ── Profile dropdown ──────────────────────────────────────
-            <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setDropdownOpen((v) => !v)}
-                className="flex items-center gap-2 px-2 py-1 rounded-lg
-                  hover:bg-surface-raised transition-all duration-200
-                  focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-                aria-haspopup="true"
-                aria-expanded={dropdownOpen}
-              >
-                {/* Avatar */}
-                <span
-                  className="w-8 h-8 rounded-full bg-accent text-accent-fg
-                  flex items-center justify-center text-sm font-bold shrink-0"
-                >
-                  {initial}
-                </span>
+          {/* Right side */}
+          <div className="flex items-center gap-1">
+            {/* Notifications — desktop only */}
+            <div className="hidden sm:block">
+              <IconBtn
+                icon={<BellIcon />}
+                label="Alerts"
+                badge={notificationCount}
+              />
+            </div>
 
-                {/* Name + chevron */}
-                <span className="text-sm font-medium text-text hidden sm:block">
-                  {firstName}
-                </span>
-                <svg
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  className={`w-3.5 h-3.5 text-text-muted transition-transform duration-200
-                    ${dropdownOpen ? "rotate-180" : ""}`}
-                >
-                  <path d="M5.22 6.22a.75.75 0 011.06 0L8 7.94l1.72-1.72a.75.75 0 111.06 1.06l-2.25 2.25a.75.75 0 01-1.06 0L5.22 7.28a.75.75 0 010-1.06z" />
-                </svg>
-              </button>
+            {/* Divider */}
+            <div className="w-px h-8 bg-border mx-1 hidden sm:block" />
 
-              {/* Dropdown panel */}
-              {dropdownOpen && (
-                <div
-                  className="absolute right-0 top-full mt-2 w-56
-                  bg-surface border border-border rounded-xl shadow-lg
-                  py-1.5 z-50"
+            {/* Wishlist — desktop only */}
+            <div className="hidden sm:block">
+              <IconBtn
+                icon={<HeartIcon />}
+                label="Wishlist"
+                badge={wishlistCount}
+                to="/wishlist"
+              />
+            </div>
+
+            {/* Cart — desktop only */}
+            <div className="hidden sm:block">
+              <IconBtn
+                icon={<CartIcon />}
+                label="Cart"
+                badge={cartCount}
+                to="/cart"
+              />
+            </div>
+
+            {/* Divider */}
+            <div className="w-px h-8 bg-border mx-1 hidden sm:block" />
+
+            {/* Profile or Guest */}
+            {isAuth ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() => setDropdownOpen((v) => !v)}
+                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg
+                    hover:bg-surface-raised transition-colors"
                 >
-                  {/* Customer info */}
-                  <div className="px-4 py-3 border-b border-border">
-                    <p className="text-sm font-semibold text-text truncate">
-                      {customer?.name}
+                  {/* Mobile Counter */}
+                  {totalMobileBadges > 0 && (
+                    <span
+                      className="sm:hidden absolute -top-1 -right-1
+                      min-w-[18px] h-[18px] px-1 rounded-full
+                      bg-danger text-white text-[10px] font-bold
+                      flex items-center justify-center
+                      border-2 border-surface"
+                    >
+                      {totalMobileBadges > 9 ? "9+" : totalMobileBadges}
+                    </span>
+                  )}
+                  <div
+                    className="w-8 h-8 rounded-full bg-accent text-accent-fg
+                    flex items-center justify-center text-sm font-bold shrink-0"
+                  >
+                    {initial}
+                  </div>
+                  <div className="hidden sm:block text-left">
+                    <p className="text-xs font-semibold text-text leading-none">
+                      {firstName}
                     </p>
-                    <p className="text-xs text-text-muted truncate mt-0.5">
-                      {customer?.email}
+                    <p className="text-[10px] text-text-muted mt-0.5">
+                      My Account
                     </p>
                   </div>
+                  <ChevronDownIcon
+                    className={`w-3.5 h-3.5 text-text-subtle hidden sm:block transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                  />
+                </button>
 
-                  {/* Menu items */}
-                  <div className="py-1">
-                    <DropdownLink
-                      to="/profile"
-                      onClick={() => setDropdownOpen(false)}
-                      icon={
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.23 0 00.41 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
-                        </svg>
-                      }
-                    >
-                      My Profile
-                    </DropdownLink>
+                {/* Dropdown */}
+                {dropdownOpen && (
+                  <div
+                    className="absolute right-0 top-full mt-2 w-56
+                    bg-surface border border-border rounded-xl shadow-lg
+                    py-1.5 z-50"
+                  >
+                    {/* User info */}
+                    <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
+                      <div
+                        className="w-9 h-9 rounded-full bg-accent text-accent-fg
+                        flex items-center justify-center text-sm font-bold shrink-0"
+                      >
+                        {initial}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-text truncate">
+                          {customer?.name}
+                        </p>
+                        <p className="text-xs text-text-muted truncate">
+                          {customer?.email}
+                        </p>
+                      </div>
+                    </div>
 
-                    <DropdownLink
-                      to="/orders"
-                      onClick={() => setDropdownOpen(false)}
-                      icon={
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M6 5v1H4.667a1.75 1.75 0 00-1.743 1.598l-.826 9.5A1.75 1.75 0 003.84 19H16.16a1.75 1.75 0 001.742-1.902l-.826-9.5A1.75 1.75 0 0015.333 6H14V5a4 4 0 00-8 0zm4-2.5A2.5 2.5 0 007.5 5v1h5V5A2.5 2.5 0 0010 2.5zM7.5 10a2.5 2.5 0 005 0V8.75a.75.75 0 011.5 0V10a4 4 0 01-8 0V8.75a.75.75 0 011.5 0V10z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      }
-                    >
-                      My Orders
-                    </DropdownLink>
+                    {/* Menu items */}
+                    <div className="py-1">
+                      <DDLink
+                        to="/profile"
+                        onClick={() => setDropdownOpen(false)}
+                        icon="👤"
+                      >
+                        My Profile
+                      </DDLink>
+                      <DDLink
+                        to="/orders"
+                        onClick={() => setDropdownOpen(false)}
+                        icon="📦"
+                      >
+                        My Orders
+                      </DDLink>
+                    </div>
 
-                    <DropdownLink
-                      to="/cart"
-                      onClick={() => setDropdownOpen(false)}
-                      icon={
-                        <svg
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-4 h-4"
-                        >
-                          <path d="M1 1.75A.75.75 0 011.75 1h1.628a1.75 1.75 0 011.734 1.51L5.18 3a65.25 65.25 0 0113.36 1.412.75.75 0 01.58.875 48.645 48.645 0 01-1.618 6.2.75.75 0 01-.712.513H6a2.503 2.503 0 00-2.292 1.5H17.25a.75.75 0 010 1.5H2.76a.75.75 0 01-.748-.807 4.002 4.002 0 012.716-3.486L3.626 2.716a.25.25 0 00-.248-.216H1.75A.75.75 0 011 1.75zM6 17.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15.5 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                        </svg>
-                      }
-                    >
-                      Cart
-                    </DropdownLink>
-                  </div>
+                    <div className="h-px bg-border my-1" />
 
-                  {/* Logout */}
-                  <div className="border-t border-border pt-1 mt-1">
+                    {/* Wishlist + Cart with counts */}
+                    <div className="py-1">
+                      <DDLink
+                        to="/wishlist"
+                        onClick={() => setDropdownOpen(false)}
+                        icon="❤️"
+                        badge={5}
+                      >
+                        Wishlist
+                      </DDLink>
+                      <DDLink
+                        to="/cart"
+                        onClick={() => setDropdownOpen(false)}
+                        icon="🛒"
+                        badge={2}
+                      >
+                        Cart
+                      </DDLink>
+                    </div>
+
+                    <div className="h-px bg-border my-1" />
+
+                    {/* Logout */}
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2.5 px-4 py-2
                         text-sm font-medium text-danger
-                        hover:bg-danger-subtle transition-colors duration-150
-                        focus-visible:outline-none"
+                        hover:bg-danger-subtle transition-colors"
                     >
-                      <svg
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        className="w-4 h-4 shrink-0"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M3 4.25A2.25 2.25 0 015.25 2h5.5A2.25 2.25 0 0113 4.25v2a.75.75 0 01-1.5 0v-2a.75.75 0 00-.75-.75h-5.5a.75.75 0 00-.75.75v11.5c0 .414.336.75.75.75h5.5a.75.75 0 00.75-.75v-2a.75.75 0 011.5 0v2A2.25 2.25 0 0110.75 18h-5.5A2.25 2.25 0 013 15.75V4.25z"
-                          clipRule="evenodd"
-                        />
-                        <path
-                          fillRule="evenodd"
-                          d="M19 10a.75.75 0 00-.75-.75H8.704l1.048-1.07a.75.75 0 10-1.004-1.115l-2.5 2.5a.75.75 0 000 1.115l2.5 2.5a.75.75 0 101.004-1.115l-1.048-1.07h9.546A.75.75 0 0019 10z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <LogoutIcon />
                       Logout
                     </button>
                   </div>
-                </div>
-              )}
-            </div>
-          ) : (
-            // ── Guest links ───────────────────────────────────────────
-            <nav className="flex items-center gap-2">
-              <Link
-                to="/login"
-                className="text-text-login hover:text-text-login-hover transition-colors duration-200"
-              >
-                Login
-              </Link>
-              <Link
-                to="/signup"
-                className="text-text-register hover:text-text-register-hover transition-colors duration-200"
-              >
-                /Register
-              </Link>
-            </nav>
-          )}
+                )}
+              </div>
+            ) : (
+              <div className="hidden sm:flex items-center gap-2">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium px-3 py-1.5 rounded-lg
+                    border border-accent text-accent hover:bg-accent-subtle transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-sm font-medium px-3 py-1.5 rounded-lg
+                    bg-accent text-accent-fg hover:bg-accent-hover transition-colors"
+                >
+                  Register
+                </Link>
+              </div>
+            )}
 
-          {/* Theme switcher */}
-          <div
-            role="radiogroup"
-            aria-label="Theme"
-            className="flex items-center gap-0.5 p-1 rounded-xl bg-surface-raised border border-border"
-          >
-            {themes.map(({ value, label, Icon }) => {
-              const isActive = theme === value;
-              return (
+            {/* Divider */}
+            <div className="w-px h-8 bg-border mx-1 hidden sm:block" />
+
+            {/* Theme toggle */}
+            <div
+              role="radiogroup"
+              aria-label="Theme"
+              className="hidden sm:flex items-center gap-0.5 p-1
+                rounded-xl bg-surface-raised border border-border"
+            >
+              {themes.map(({ value, label, Icon }) => (
                 <button
                   key={value}
                   role="radio"
-                  aria-checked={isActive}
+                  aria-checked={theme === value}
                   title={`${label} mode`}
                   onClick={() => setTheme(value)}
                   className={[
-                    "inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium",
-                    "transition-all duration-200 cursor-pointer border-none",
+                    "w-7 h-7 inline-flex items-center justify-center rounded-lg",
+                    "transition-all duration-200 border-none cursor-pointer",
                     "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                    isActive
+                    theme === value
                       ? "bg-accent text-accent-fg shadow-sm"
                       : "text-text-muted hover:text-text hover:bg-surface",
                   ].join(" ")}
                 >
                   <Icon />
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* ── Desktop nav ── */}
+      <nav className="hidden md:flex border-t border-border container mx-auto px-4">
+        {navLinks.map(({ label, to }) => (
+          <Link
+            key={to}
+            to={to}
+            className={[
+              "px-4 py-2.5 text-sm border-b-2 transition-all duration-200 whitespace-nowrap",
+              pathname === to
+                ? "text-text font-medium border-accent"
+                : "text-text-muted hover:text-text border-transparent hover:border-accent",
+            ].join(" ")}
+          >
+            {label}
+          </Link>
+        ))}
+      </nav>
+
+      {/* ── Mobile drawer ── */}
+      {menuOpen && (
+        <div className="md:hidden border-t border-border bg-surface">
+          <nav className="flex flex-col py-1">
+            {navLinks.map(({ label, to }) => (
+              <Link
+                key={to}
+                to={to}
+                onClick={() => setMenuOpen(false)}
+                className={[
+                  "px-5 py-3 text-sm transition-colors",
+                  pathname === to
+                    ? "text-text font-medium bg-surface-raised"
+                    : "text-text-muted hover:text-text hover:bg-surface-raised",
+                ].join(" ")}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          {!isAuth && (
+            <div className="flex gap-2 px-5 py-3 border-t border-border">
+              <Link
+                to="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 text-center text-sm font-medium py-2 rounded-lg
+                  border border-accent text-accent"
+              >
+                Login
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 text-center text-sm font-medium py-2 rounded-lg
+                  bg-accent text-accent-fg"
+              >
+                Register
+              </Link>
+            </div>
+          )}
+
+          <div className="px-5 py-3 border-t border-border flex items-center gap-3">
+            <span className="text-xs text-text-muted">Theme</span>
+            <div className="flex items-center gap-0.5 p-1 rounded-xl bg-surface-raised border border-border">
+              {themes.map(({ value, label, Icon }) => (
+                <button
+                  key={value}
+                  title={label}
+                  onClick={() => setTheme(value)}
+                  className={[
+                    "w-7 h-7 inline-flex items-center justify-center rounded-lg border-none",
+                    theme === value
+                      ? "bg-accent text-accent-fg"
+                      : "text-text-muted hover:bg-surface",
+                  ].join(" ")}
+                >
+                  <Icon />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
 
-// ── Reusable dropdown link ────────────────────────────────────────────────────
-function DropdownLink({ to, onClick, icon, children }) {
+// ── Dropdown link with optional badge ─────────────────────────────────────
+function DDLink({ to, onClick, icon, badge, children }) {
   return (
     <Link
       to={to}
       onClick={onClick}
-      className="flex items-center gap-2.5 px-4 py-2
-        text-sm font-medium text-text
-        hover:bg-surface-raised transition-colors duration-150
-        focus-visible:outline-none"
+      className="flex items-center gap-2.5 px-4 py-2 text-sm font-medium
+        text-text hover:bg-surface-raised transition-colors"
     >
-      <span className="text-text-muted shrink-0">{icon}</span>
-      {children}
+      <span className="text-base leading-none">{icon}</span>
+      <span className="flex-1">{children}</span>
+      {badge > 0 && (
+        <span
+          className="min-w-[18px] h-[18px] px-1 rounded-full bg-accent
+          text-accent-fg text-[10px] font-bold flex items-center justify-center"
+        >
+          {badge}
+        </span>
+      )}
     </Link>
   );
 }

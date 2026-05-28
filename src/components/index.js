@@ -18,6 +18,7 @@ export {
   ThemeProvider,
   useTheme,
 } from "./ThemeProvider/ThemeProvider";
+export { default as IconBtn } from "./htmlComponents/IconBtn";
 
 // import Button from "./htmlComponents/Button";
 // import Input from "./htmlComponents/Input";
